@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">NewdayNewLife</string>
+    <string name="music_name">music name</string>
+    <string name="stop">暂停</string>
+    <string name="author_name">author name</string>
+    <string name="weather">weather</string>
+    <string name="date">date</string>
+    <string name="music">music</string>
+</resources>

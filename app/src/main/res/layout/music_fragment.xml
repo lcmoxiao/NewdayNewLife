@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorMusic"
+
+    >
+
+    <TextView
+        android:id="@+id/tvmusicname"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/music_name"
+        android:textSize="20sp"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/tvmusicauthorname"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/author_name"
+        android:textSize="20sp"
+        android:layout_gravity="center"/>
+
+    <SeekBar
+        android:layout_marginTop="100dp"
+        android:id="@+id/seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btmusic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+
+        android:layout_gravity="center"
+        android:background="@drawable/circle_shape"
+        android:text="@string/stop"
+        android:textSize="15sp"
+        android:textColor="@color/colorAccent">
+    </Button>
+
+
+</LinearLayout>
