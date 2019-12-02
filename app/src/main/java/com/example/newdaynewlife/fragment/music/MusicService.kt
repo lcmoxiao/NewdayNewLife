@@ -1,4 +1,4 @@
-package com.example.newdaynewlife.service
+package com.example.newdaynewlife.fragment.music
 
 import android.app.Service
 import android.content.Intent

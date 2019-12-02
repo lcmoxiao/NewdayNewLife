@@ -3,8 +3,13 @@
     <words>
       <w>curren</w>
       <w>isplaying</w>
+      <w>mcontext</w>
+      <w>okhttp</w>
       <w>postion</w>
       <w>seekbar</w>
+      <w>tvdata</w>
+      <w>tvtemperature</w>
+      <w>tvwind</w>
     </words>
   </dictionary>
 </component>

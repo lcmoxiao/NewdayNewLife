@@ -3,9 +3,9 @@ package com.example.newdaynewlife
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.example.newdaynewlife.adapter.FragmentAdapter
-import com.example.newdaynewlife.fragment.MusicFragment
-import com.example.newdaynewlife.fragment.WeatherFragment
+import com.example.newdaynewlife.base.FragmentAdapter
+import com.example.newdaynewlife.fragment.music.MusicFragment
+import com.example.newdaynewlife.fragment.weather.WeatherFragment
 
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
         val fgs : ArrayList<Fragment> = ArrayList()
         fgs.add(MusicFragment())
         fgs.add(WeatherFragment())
-
 
         vpAdapter = FragmentAdapter(supportFragmentManager, fgs)
         vp.adapter = vpAdapter

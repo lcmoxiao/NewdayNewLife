@@ -6,4 +6,6 @@
     <string name="weather">weather</string>
     <string name="date">date</string>
     <string name="music">music</string>
+    <string name="wind">wind</string>
+    <string name="temperature">temperature</string>
 </resources>
