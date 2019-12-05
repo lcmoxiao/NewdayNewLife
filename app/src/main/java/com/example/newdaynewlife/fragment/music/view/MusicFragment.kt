@@ -1,51 +1,48 @@
-package com.example.newdaynewlife.fragment.music
+package com.example.newdaynewlife.fragment.music.view
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.*
 import android.content.Context.BIND_AUTO_CREATE
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.RemoteViews
 import android.widget.SeekBar
 import androidx.core.app.NotificationCompat
-import com.example.newdaynewlife.MainActivity
 import com.example.newdaynewlife.base.BaseFragment
 import com.example.newdaynewlife.R
+import com.example.newdaynewlife.fragment.music.present.MusicService
 import kotlinx.android.synthetic.main.music_fragment.*
-import kotlinx.android.synthetic.main.musicnotification.*
 import java.lang.Exception
 
 
 class MusicFragment : BaseFragment()
 {
-
+    //在服务被绑定的时候进行绑定
     lateinit var musicControl: MusicService.MyBinder
-    lateinit var conn: MyConnection
-    lateinit var receiver:BroadcastReceiver
-    lateinit var notificationManager:NotificationManager
-    lateinit var notificationbuilder: NotificationCompat.Builder
-    lateinit var notification: Notification
+    private lateinit var conn: MyConnection
+    private lateinit var receiver:BroadcastReceiver
+    private lateinit var notificationManager:NotificationManager
+    private lateinit var notificationbuilder: NotificationCompat.Builder
+    private lateinit var notification: Notification
     private val UPDATE_PROGRESS = 0
+
+
 
 
     override fun init() {
         super.init()
-
+        //初始化后台通知栏
         initNotification()
-
-        tvmusicname.text = getString(R.string.music)
-
-        conn = MyConnection()
-        activity!!.bindService(Intent(activity, MusicService().javaClass), conn, BIND_AUTO_CREATE)
-
+        // 初始化跨通知栏和fragment通信的receiver
         initReceiver()
+        //初始化按钮
         initButton()
+        //绑定并启动音乐服务
+        activity!!.bindService(Intent(activity, MusicService().javaClass), MyConnection(), BIND_AUTO_CREATE)
     }
 
     private fun initReceiver()
@@ -63,7 +60,7 @@ class MusicFragment : BaseFragment()
 
     private fun initButton()
     {
-        seekbar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+        musicplayseekbar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser){
                     musicControl.seekTo(progress)
@@ -72,12 +69,13 @@ class MusicFragment : BaseFragment()
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        btmusic.setOnClickListener {
+        btmusicplay.setOnClickListener {
             musicControl.play()
             updatePlayText()
         }
     }
 
+    //这是一个会自己给自己发信息的无限循环handler
     private var handler = Handler {
         when (it.what) {
             UPDATE_PROGRESS ->
@@ -93,71 +91,63 @@ class MusicFragment : BaseFragment()
         }
     }
 
+    //更新进度条
+    private fun updateProgress() {
+        musicplayseekbar.progress =  musicControl.getCurrenPostion()
+        //使用Handler每500毫秒更新一次进度条
+        handler.sendEmptyMessageDelayed(UPDATE_PROGRESS, 500)
+    }
+
+    //初始化MyConnection并绑定musicControl
     inner class MyConnection: ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {}
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             //获得service中的MyBinder
             musicControl =  service as MusicService.MyBinder
-            //更新按钮的文字
-            updatePlayText()
             //设置进度条的最大值
-            seekbar.max = musicControl.getDuration()
+            musicplayseekbar.max = musicControl.getDuration()
             //设置进度条的进度
-            seekbar.progress = musicControl.getCurrenPostion()
+            musicplayseekbar.progress = musicControl.getCurrenPostion()
         }
     }
 
-    @SuppressLint("ObsoleteSdkInt")
-    fun initNotification() {
+    private fun initNotification() {
         val mcontext = context!!
         notificationManager = mcontext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val id = "1"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "portable play"
-            // 用户可以看到的通知渠道的描述
-            val importance = NotificationManager.IMPORTANCE_LOW
-            //注意Name和description不能为null或者""
-            val mChannel = NotificationChannel(id, name, importance)
-            mChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-            //最后在notificationmanager中创建该通知渠道
-            notificationManager.createNotificationChannel(mChannel)
-        }
-        val remoteView = RemoteViews(activity?.packageName,R.layout.musicnotification)
+        val mChannel = NotificationChannel( "1", "portable play", NotificationManager.IMPORTANCE_LOW)
+        mChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+        notificationManager.createNotificationChannel(mChannel)
+        val remoteView = RemoteViews(context?.packageName,R.layout.musicnotification)
         remoteView.setOnClickPendingIntent(R.id.nobtmusic,PendingIntent.getBroadcast(mcontext, 0,  Intent("bt"), PendingIntent.FLAG_CANCEL_CURRENT))
-        notificationbuilder = NotificationCompat.Builder(mcontext,id)
+        notification = NotificationCompat.Builder(mcontext,"1")
             .setPriority(2)
             .setSmallIcon(R.mipmap.app)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setContent(remoteView)
-        notification = notificationbuilder.build()
+            .setContent(remoteView).build()
         notificationManager.notify(1,notification)
     }
 
-
-
-    //更新进度条
-    private fun updateProgress() {
-        val currenPosition = musicControl.getCurrenPostion()
-        seekbar.progress = currenPosition
-        //使用Handler每500毫秒更新一次进度条
-        handler.sendEmptyMessageDelayed(UPDATE_PROGRESS, 500)
-    }
-
-    //更新按钮的文字
-    private fun updatePlayText() {
+    private fun notificationText(str:String)
+    {
         val remoteView = RemoteViews(activity?.packageName,R.layout.musicnotification)
         remoteView.setOnClickPendingIntent(R.id.nobtmusic,PendingIntent.getBroadcast(context, 0,  Intent("bt"), PendingIntent.FLAG_CANCEL_CURRENT))
-        if (musicControl.isPlaying()) {
-            btmusic.text = "暂停"
-            remoteView.setTextViewText(R.id.nobtmusic,"暂停")
-            handler.sendEmptyMessage(UPDATE_PROGRESS)
-        } else {
-            btmusic.text = "播放"
-            remoteView.setTextViewText(R.id.nobtmusic,"播放")
-        }
+        remoteView.setTextViewText(R.id.nobtmusic,str)
         notificationbuilder.setContent(remoteView)
         notification = notificationbuilder.build()
         notificationManager.notify(1,notification)
+    }
+
+
+    //更新按钮的文字
+    private fun updatePlayText() {
+        if (musicControl.isPlaying()) {
+            btmusicplay.text = "暂停"
+            notificationText("暂停")
+            handler.sendEmptyMessage(UPDATE_PROGRESS)
+        } else {
+            btmusicplay.text = "播放"
+            notificationText("播放")
+        }
     }
 
     override fun getLayoutResId(): Int {
@@ -187,6 +177,5 @@ class MusicFragment : BaseFragment()
         activity!!.unbindService(conn)
         super.onDestroy()
     }
-
 
 }

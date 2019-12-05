@@ -1,4 +1,4 @@
-package com.example.newdaynewlife.fragment.music
+package com.example.newdaynewlife.fragment.music.present
 
 import android.app.Service
 import android.content.Intent
@@ -8,11 +8,13 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.example.newdaynewlife.R
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.File
 
 class MusicService : Service() {
 
-    val TAG = "MusicService"
     var musicPlayer = MediaPlayer()
 
     override fun onCreate() {
@@ -26,12 +28,10 @@ class MusicService : Service() {
         return MyBinder()
     }
 
-
     override fun onDestroy() {
         musicPlayer.stop()
         super.onDestroy()
     }
-
 
      inner class MyBinder : Binder(){
          fun getDuration(): Int {

@@ -25,15 +25,42 @@
 
     <SeekBar
         android:layout_marginTop="100dp"
-        android:id="@+id/seekbar"
+        android:id="@+id/musicplayseekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/btmusic"
+        android:id="@+id/btmusicplay"
         android:layout_width="100dp"
         android:layout_height="100dp"
 
+        android:layout_gravity="center"
+        android:background="@drawable/circle_shape"
+        android:text="@string/stop"
+        android:textSize="15sp"
+        android:textColor="@color/colorAccent">
+    </Button>
+
+
+    <TextView
+        android:id="@+id/tvmusicdown"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/author_name"
+        android:textSize="20sp"
+        android:layout_gravity="center"/>
+
+    <SeekBar
+        android:layout_marginTop="100dp"
+        android:id="@+id/downseekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btdown"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
         android:background="@drawable/circle_shape"
         android:text="@string/stop"

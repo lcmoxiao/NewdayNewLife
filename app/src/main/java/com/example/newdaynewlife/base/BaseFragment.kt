@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
 abstract class BaseFragment: Fragment() {
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(getLayoutResId(),null)
     }
@@ -20,5 +22,6 @@ abstract class BaseFragment: Fragment() {
     open fun init() {
     }
 
+    //用于给子Fragment传递id
     abstract fun getLayoutResId(): Int
 }

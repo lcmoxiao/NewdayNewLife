@@ -1,6 +1,6 @@
 package com.example.newdaynewlife.http
 
-interface myCallback {
+interface MyCallback {
 
     fun onSuccess(result:String)
 
