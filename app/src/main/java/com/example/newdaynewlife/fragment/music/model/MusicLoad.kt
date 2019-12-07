@@ -88,7 +88,6 @@ open class MusicLoad:AsyncTask<String,Int,Boolean>(){
             } finally {
                 try {
                     byteStream.close()
-                    file.delete()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
