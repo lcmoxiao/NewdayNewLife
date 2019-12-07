@@ -9,5 +9,6 @@
     <string name="wind">wind</string>
     <string name="temperature">temperature</string>
     <string name="current_time">%1$d年%2$d月%3$d日</string>
+    <string name="loading">缓存中</string>
 
 </resources>

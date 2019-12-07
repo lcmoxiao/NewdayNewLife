@@ -1,5 +1,6 @@
 package com.example.newdaynewlife.fragment.music.view
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,6 +15,7 @@ import android.widget.SeekBar
 import androidx.core.app.NotificationCompat
 import com.example.newdaynewlife.base.BaseFragment
 import com.example.newdaynewlife.R
+import com.example.newdaynewlife.fragment.music.model.MusicLoad
 import com.example.newdaynewlife.fragment.music.present.MusicService
 import kotlinx.android.synthetic.main.music_fragment.*
 import java.lang.Exception
@@ -29,21 +31,42 @@ class MusicFragment : BaseFragment()
     private lateinit var notificationbuilder: NotificationCompat.Builder
     private lateinit var notification: Notification
     private val UPDATE_PROGRESS = 0
-
-
-
+    private val musicLoad =
+    @SuppressLint("StaticFieldLeak")
+    object :MusicLoad(){
+        override fun onProgressUpdate(vararg values: Int?) {
+            super.onProgressUpdate(*values)
+            downseekbar.progress=values[0]!!
+            btdown.text = values[0]!!.toString()
+        }
+        override fun onPostExecute(result: Boolean?) {
+            super.onPostExecute(result)
+            if(result!!) {//绑定并启动音乐服务
+                activity!!.bindService(Intent(activity, MusicService().javaClass), MyConnection(), BIND_AUTO_CREATE)
+                //初始化后台通知栏
+                initNotification()
+                // 初始化跨通知栏和fragment通信的receiver
+                initReceiver()
+                btdown.text = "下载成功"
+            }
+            else btdown.text = "今天没有音乐"
+        }
+    }
 
     override fun init() {
         super.init()
-        //初始化后台通知栏
-        initNotification()
-        // 初始化跨通知栏和fragment通信的receiver
-        initReceiver()
+        initText()
         //初始化按钮
         initButton()
-        //绑定并启动音乐服务
-        activity!!.bindService(Intent(activity, MusicService().javaClass), MyConnection(), BIND_AUTO_CREATE)
+        musicLoad.execute()
     }
+
+    private fun initText()
+    {
+        btdown.text ="开始下载"
+        btmusicplay.text="等待中"
+    }
+
 
     private fun initReceiver()
     {
@@ -73,6 +96,11 @@ class MusicFragment : BaseFragment()
             musicControl.play()
             updatePlayText()
         }
+        btdown.setOnClickListener {
+            musicLoad.isCanceled=true
+            musicLoad.cancel(true)
+        }
+
     }
 
     //这是一个会自己给自己发信息的无限循环handler
